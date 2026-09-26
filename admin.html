@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الأستاذ | منصة محمد عيسى</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">م</div>
+    <span>لوحة الأستاذ محمد عيسى</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">الرئيسية</a>
+    <button class="btn" onclick="logout()">خروج</button>
+  </div>
+</nav>
+
+<section id="adminPanel" class="dashboard" style="display:block">
+  <div class="dash-header">
+    <h2>👑 مرحباً أستاذ محمد</h2>
+    <p style="color:#aaa">إدارة كاملة للمنصة</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchAdminTab('adminCourses', this)">📚 الكورسات</button>
+    <button class="tab" onclick="switchAdminTab('adminLessons', this)">🎬 الدروس</button>
+    <button class="tab" onclick="switchAdminTab('adminAnnouncements', this)">📢 الإعلانات</button>
+    <button class="tab" onclick="switchAdminTab('adminStudents', this)">👥 الطلاب</button>
+  </div>
+
+  <div id="adminTabContent"></div>
+</section>
+
+<div class="modal-overlay" id="adminModal">
+  <div class="modal" style="position:relative;max-width:600px">
+    <button class="close-btn" onclick="closeAdminModal()">✕</button>
+    <h2 id="adminModalTitle">إضافة</h2>
+    <div id="adminModalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
+<script>
+(async function initAdmin() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session?.user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = session.user;
+
+  // التحقق من صلاحية الأستاذ
+  const { data: adminRow } = await supabaseClient
+    .from('admins').select('id').eq('id', currentUser.id).maybeSingle();
+  if (!adminRow) {
+    alert('غير مصرح لك بالدخول');
+    window.location.href = 'index.html';
+    return;
+  }
+  isAdmin = true;
+  switchAdminTab('adminCourses');
+})();
+</script>
+</body>
+</html>
