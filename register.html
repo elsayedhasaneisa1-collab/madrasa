@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d4af37">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="https://fav.farm/🎓">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<title>إنشاء حساب جديد | منصة الأستاذ محمد عيسى</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-page">
+
+<div class="auth-container">
+  <div class="auth-brand">
+    <div class="logo-icon big">م.ع</div>
+    <h1>منصة الأستاذ محمد عيسى</h1>
+    <p>أنشئ حسابك وابدأ رحلتك نحو التفوق</p>
+  </div>
+
+  <div class="auth-card">
+    <h2 class="form-title">📝 إنشاء حساب جديد</h2>
+    <p class="form-subtitle">جميع البيانات مطلوبة</p>
+
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      
+      <div class="form-group">
+        <label><i class="fas fa-user" style="color:var(--gold);"></i> الاسم بالكامل <span class="required">*</span></label>
+        <input type="text" id="fullName" required minlength="3" placeholder="اكتب اسمك الثلاثي" autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-venus-mars" style="color:var(--gold);"></i> النوع <span class="required">*</span></label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="gender" value="male" required>
+            <span class="radio-label">👦 طالب</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="gender" value="female" required>
+            <span class="radio-label">👧 طالبة</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-envelope" style="color:var(--gold);"></i> البريد الإلكتروني <span class="required">*</span></label>
+        <input type="email" id="email" required placeholder="example@mail.com" autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-phone" style="color:var(--gold);"></i> رقم الهاتف <span class="required">*</span></label>
+        <input type="tel" id="phone" required placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric" autocomplete="tel">
+        <small class="form-hint">11 رقم يبدأ بـ 01</small>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-users" style="color:var(--gold);"></i> رقم هاتف ولي الأمر <span class="required">*</span></label>
+        <input type="tel" id="parentPhone" required placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric">
+        <small class="form-hint">11 رقم يبدأ بـ 01</small>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-lock" style="color:var(--gold);"></i> الرقم السري <span class="required">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="password" required minlength="6" placeholder="6 أحرف على الأقل" autocomplete="new-password">
+          <button type="button" class="toggle-password" onclick="togglePassword('password')"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="password-strength" id="strength"></div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-lock" style="color:var(--gold);"></i> تأكيد الرقم السري <span class="required">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="passwordConfirm" required minlength="6" placeholder="أعد كتابة الرقم السري" autocomplete="new-password">
+          <button type="button" class="toggle-password" onclick="togglePassword('passwordConfirm')"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-option">
+          <input type="checkbox" id="terms" required>
+          <span>أوافق على <a href="#" class="terms-link">الشروط والأحكام</a> وسياسة الخصوصية</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-block" id="registerBtn">
+        <i class="fas fa-user-plus"></i> إنشاء الحساب
+      </button>
+    </form>
+
+    <div class="auth-footer-links">
+      <p>لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a></p>
+      <a href="index.html" class="back-link">← العودة للرئيسية</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script>
+function togglePassword(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.type = field.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById('password').addEventListener('input', function(e) {
+  const password = e.target.value;
+  const strength = checkPasswordStrength(password);
+  const bar = document.getElementById('strength');
+  if (!password) { bar.innerHTML = ''; return; }
+  bar.innerHTML = `
+    <div class="strength-bar">
+      <div class="strength-fill" style="width: ${strength.percent}%; background: ${strength.color}"></div>
+    </div>
+    <div class="strength-text" style="color: ${strength.color}">${strength.text}</div>
+  `;
+});
+
+function checkPasswordStrength(password) {
+  let score = 0;
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^a-zA-Z0-9]/.test(password)) score++;
+  if (score <= 2) return { percent: 25, color: '#e74c3c', text: '⚠️ ضعيفة' };
+  if (score <= 4) return { percent: 50, color: '#f39c12', text: '🟡 متوسطة' };
+  if (score <= 5) return { percent: 75, color: '#3498db', text: '🔵 جيدة' };
+  return { percent: 100, color: '#27ae60', text: '✅ قوية' };
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const btn = document.getElementById('registerBtn');
+  const originalText = btn.innerHTML;
+  
+  const fullName = document.getElementById('fullName').value.trim();
+  const gender = document.querySelector('input[name="gender"]:checked')?.value;
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+  const password = document.getElementById('password').value;
+  const passwordConfirm = document.getElementById('passwordConfirm').value;
+  const terms = document.getElementById('terms').checked;
+
+  if (!fullName || fullName.length < 3) return showToast('❌ الاسم مطلوب', true);
+  if (!gender) return showToast('❌ اختر النوع', true);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast('❌ البريد غير صحيح', true);
+  if (!/^01[0-9]{9}$/.test(phone)) return showToast('❌ رقم الهاتف غير صحيح', true);
+  if (!/^01[0-9]{9}$/.test(parentPhone)) return showToast('❌ رقم ولي الأمر غير صحيح', true);
+  if (password.length < 6) return showToast('❌ الرقم السري 6 أحرف على الأقل', true);
+  if (password !== passwordConfirm) return showToast('❌ الرقمين غير متطابقين', true);
+  if (!terms) return showToast('❌ يجب الموافقة على الشروط', true);
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ جاري إنشاء الحساب...';
+
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email, password,
+      options: { data: { full_name: fullName, gender, phone, parent_phone: parentPhone } }
+    });
+    if (error) throw error;
+
+    if (data.user) {
+      const fingerprint = getDeviceFingerprint();
+      await supabaseClient.from('students').insert({
+        id: data.user.id,
+        full_name: fullName,
+        gender: gender,
+        phone: phone,
+        parent_phone: parentPhone,
+        device_fingerprint: fingerprint,
+        last_login: new Date().toISOString()
+      });
+    }
+
+    showToast('✅ تم إنشاء الحساب! جاري التوجيه...');
+    setTimeout(() => {
+      if (data.user && !data.session) {
+        showToast('📧 تحقق من بريدك لتأكيد الحساب', true);
+        setTimeout(() => window.location.href = 'login.html', 2500);
+      } else {
+        window.location.href = 'index.html';
+      }
+    }, 1500);
+
+  } catch (err) {
+    let errorMsg = err.message || 'حدث خطأ';
+    if (errorMsg.includes('already registered') || errorMsg.includes('already been registered')) errorMsg = '❌ هذا البريد مسجل بالفعل';
+    else if (errorMsg.includes('Password')) errorMsg = '❌ كلمة المرور ضعيفة';
+    else if (errorMsg.includes('valid email')) errorMsg = '❌ البريد غير صحيح';
+    showToast(errorMsg, true);
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+['phone', 'parentPhone'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+  });
+});
+
+(async function init() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user) window.location.href = 'index.html';
+})();
+</script>
+</body>
+</html>

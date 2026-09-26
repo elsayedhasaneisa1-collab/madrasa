@@ -3,20 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الأستاذ | منصة محمد عيسى</title>
+<meta name="theme-color" content="#d4af37">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="https://fav.farm/🎓">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
+<title>لوحة الأستاذ | منصة محمد عيسى</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <nav>
   <div class="logo">
-    <div class="logo-icon">م</div>
-    <span>لوحة الأستاذ محمد عيسى</span>
+    <div class="logo-icon">م.ع</div>
+    <div class="logo-text">
+      <span class="logo-name">لوحة الأستاذ</span>
+      <span class="logo-tag">محمد عيسى</span>
+    </div>
   </div>
   <div class="nav-links">
     <a href="index.html">الرئيسية</a>
-    <button class="btn" onclick="logout()">خروج</button>
+    <button class="btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
   </div>
 </nav>
 
@@ -25,19 +32,17 @@
     <h2>👑 مرحباً أستاذ محمد</h2>
     <p style="color:#aaa">إدارة كاملة للمنصة</p>
   </div>
-
   <div class="tabs">
     <button class="tab active" onclick="switchAdminTab('adminCourses', this)">📚 الكورسات</button>
     <button class="tab" onclick="switchAdminTab('adminLessons', this)">🎬 الدروس</button>
     <button class="tab" onclick="switchAdminTab('adminAnnouncements', this)">📢 الإعلانات</button>
     <button class="tab" onclick="switchAdminTab('adminStudents', this)">👥 الطلاب</button>
   </div>
-
   <div id="adminTabContent"></div>
 </section>
 
 <div class="modal-overlay" id="adminModal">
-  <div class="modal" style="position:relative;max-width:600px">
+  <div class="modal" style="max-width:600px">
     <button class="close-btn" onclick="closeAdminModal()">✕</button>
     <h2 id="adminModalTitle">إضافة</h2>
     <div id="adminModalBody"></div>
@@ -46,8 +51,15 @@
 
 <div class="toast" id="toast"></div>
 
+<a href="https://t.me/sayoda_elgadar" target="_blank" class="telegram-float">
+  <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+    <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+  </svg>
+</a>
+
 <script src="js/config.js"></script>
 <script src="js/utils.js"></script>
+<script src="js/session.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/admin.js"></script>
 <script>
@@ -59,14 +71,18 @@
   }
   currentUser = session.user;
 
-  // التحقق من صلاحية الأستاذ
+  // تحقق من صلاحية الأدمن
   const { data: adminRow } = await supabaseClient
     .from('admins').select('id').eq('id', currentUser.id).maybeSingle();
+
   if (!adminRow) {
     alert('غير مصرح لك بالدخول');
     window.location.href = 'index.html';
     return;
   }
+
+  // ابدأ الجلسة
+  await startSession(currentUser.id);
   isAdmin = true;
   switchAdminTab('adminCourses');
 })();
