@@ -2006,3 +2006,51 @@ footer::before {
     font-size: 15px;
   }
 }
+/* ═══════════════ صورة الأستاذ - مقاس كبير ═══════════════ */
+.teacher-avatar-img {
+  width: 100%;
+  max-width: 420px;
+  height: 520px;
+  margin: 0 auto;
+  border-radius: 28px;
+  object-fit: cover;
+  object-position: center top;
+  box-shadow:
+    0 30px 80px rgba(212,175,55,0.5),
+    0 0 0 8px rgba(212,175,55,0.18),
+    0 0 0 20px rgba(212,175,55,0.06);
+  position: relative;
+  display: block;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 3px solid rgba(212,175,55,0.35);
+}
+
+.teacher-avatar-img:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow:
+    0 40px 100px rgba(212,175,55,0.6),
+    0 0 0 8px rgba(212,175,55,0.28),
+    0 0 0 20px rgba(212,175,55,0.1);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .teacher-avatar-img {
+    max-width: 340px;
+    height: 440px;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-avatar-img {
+    max-width: 300px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-avatar-img {
+    max-width: 260px;
+    height: 350px;
+  }
+}
