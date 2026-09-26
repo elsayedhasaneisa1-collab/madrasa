@@ -5,11 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#d4af37">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="https://fav.farm/🎓">
+<link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
 <title>لوحة الأستاذ | منصة محمد عيسى</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* تنسيقات إضافية خاصة باللوحة */
+  .admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid rgba(212,175,55,0.15);
+    flex-wrap: wrap;
+    padding-bottom: 0;
+  }
+  .admin-tabs .tab {
+    padding: 14px 22px;
+    font-size: 14px;
+  }
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    background: linear-gradient(145deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02));
+    border-right: 3px solid var(--gold);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+  }
+  .item-row:hover {
+    background: rgba(212,175,55,0.12);
+    transform: translateX(-3px);
+  }
+  .item-info h4 {
+    color: var(--gold);
+    font-size: 16px;
+    margin-bottom: 4px;
+    font-weight: 800;
+  }
+  .item-info p {
+    color: #999;
+    font-size: 12px;
+  }
+  .item-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .item-actions button {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .timer-badge {
+    display: inline-block;
+    background: rgba(212,175,55,0.15);
+    color: var(--gold);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    margin-left: 6px;
+    border: 1px solid rgba(212,175,55,0.3);
+  }
+  .timer-badge.danger {
+    background: rgba(231,76,60,0.15);
+    color: #ff6b6b;
+    border-color: rgba(231,76,60,0.3);
+  }
+  .timer-badge.success {
+    background: rgba(39,174,96,0.15);
+    color: #2ecc71;
+    border-color: rgba(39,174,96,0.3);
+  }
+  .expired-notice {
+    background: rgba(231,76,60,0.1);
+    border: 1px solid rgba(231,76,60,0.3);
+    color: #ff6b6b;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
 
@@ -32,9 +113,11 @@
     <h2>👑 مرحباً أستاذ محمد</h2>
     <p style="color:#aaa">إدارة كاملة للمنصة</p>
   </div>
-  <div class="tabs">
+  <div class="tabs admin-tabs">
     <button class="tab active" onclick="switchAdminTab('adminCourses', this)">📚 الكورسات</button>
     <button class="tab" onclick="switchAdminTab('adminLessons', this)">🎬 الدروس</button>
+    <button class="tab" onclick="switchAdminTab('adminExams', this)">📝 الامتحانات</button>
+    <button class="tab" onclick="switchAdminTab('adminHomeworks', this)">📓 الواجبات</button>
     <button class="tab" onclick="switchAdminTab('adminAnnouncements', this)">📢 الإعلانات</button>
     <button class="tab" onclick="switchAdminTab('adminStudents', this)">👥 الطلاب</button>
   </div>
@@ -71,7 +154,6 @@
   }
   currentUser = session.user;
 
-  // تحقق من صلاحية الأدمن
   const { data: adminRow } = await supabaseClient
     .from('admins').select('id').eq('id', currentUser.id).maybeSingle();
 
@@ -80,9 +162,6 @@
     window.location.href = 'index.html';
     return;
   }
-
-  // ابدأ الجلسة
-  await startSession(currentUser.id);
   isAdmin = true;
   switchAdminTab('adminCourses');
 })();
