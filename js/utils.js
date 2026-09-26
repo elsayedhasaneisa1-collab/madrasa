@@ -1,8 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// أدوات مساعدة + الحماية الحقيقية
+// أدوات مساعدة + الحماية
 // ═══════════════════════════════════════════════════════════
 
-// ───────────── Toast ─────────────
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -14,22 +13,16 @@ function showToast(msg, isError = false) {
   }, 3000);
 }
 
-// ───────────── Escape HTML ─────────────
 function escapeHtml(s) {
   return (s || '').toString().replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
   );
 }
 
-// ───────────── Scroll ─────────────
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
-
-// ═══════════════════════════════════════════════
-// 🛡️ الحماية
-// ═══════════════════════════════════════════════
 
 function applyProtection(element) {
   if (!element) return;
@@ -120,7 +113,6 @@ function activateAllProtection() {
   blockPrintScreen();
 }
 
-// ───────────── تخزين آمن ─────────────
 const secureVideoStore = new Map();
 
 async function fetchVideoAsBlob(url, lessonId) {

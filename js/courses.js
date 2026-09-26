@@ -30,7 +30,7 @@ async function loadCourses() {
 
 function renderCourseCard(c) {
   return `
-    <div class="card">
+    <div class="card reveal">
       <div class="card-img">
         ${c.image_url ? `<img src="${escapeHtml(c.image_url)}" alt="">` : '📖'}
       </div>
@@ -62,12 +62,16 @@ async function loadAnnouncements() {
   }
 
   list.innerHTML = data.map(a => `
-    <div class="announcement">
+    <div class="announcement reveal">
       <h4>${escapeHtml(a.title)}</h4>
       <p>${escapeHtml(a.content || '')}</p>
       <div class="date">${new Date(a.created_at).toLocaleDateString('ar-EG')}</div>
     </div>
   `).join('');
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    if (window._revealObserver) window._revealObserver.observe(el);
+  });
 }
 
 async function enroll(courseId) {
@@ -155,7 +159,9 @@ async function renderProfile(content) {
       <h2 style="margin-bottom:15px">بياناتي</h2>
       <p><strong style="color:var(--gold)">البريد:</strong> ${escapeHtml(currentUser.email)}</p>
       <p style="margin-top:8px"><strong style="color:var(--gold)">الاسم:</strong> ${escapeHtml(data?.full_name || '-')}</p>
+      <p style="margin-top:8px"><strong style="color:var(--gold)">النوع:</strong> ${data?.gender === 'male' ? '👦 طالب' : data?.gender === 'female' ? '👧 طالبة' : '-'}</p>
       <p style="margin-top:8px"><strong style="color:var(--gold)">الهاتف:</strong> ${escapeHtml(data?.phone || '-')}</p>
+      <p style="margin-top:8px"><strong style="color:var(--gold)">ولي الأمر:</strong> ${escapeHtml(data?.parent_phone || '-')}</p>
       <p style="margin-top:8px"><strong style="color:var(--gold)">الصف:</strong> ${escapeHtml(data?.grade || '-')}</p>
     </div>`;
 }

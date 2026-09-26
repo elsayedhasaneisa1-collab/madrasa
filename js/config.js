@@ -3,43 +3,43 @@
 // ═══════════════════════════════════════════════════════════
 
 const CONFIG = {
-  // Supabase
   SUPABASE_URL: 'https://brawrhpvtnzvvrzkguic.supabase.co',
   SUPABASE_KEY: 'sb_publishable_Q8fBS3nVZqgvfd6diaul8A_cMvHUFtN',
 
-  // Buckets
   BUCKETS: {
     videos: 'videos',
     images: 'images'
   },
 
-  // إعدادات الفيديو
   SIGNED_URL_EXPIRY: 3600,
   MAX_VIDEO_SIZE_MB: 500,
 
-  // العلامة المائية
   WATERMARK: {
     interval: 4000,
     opacity: 0.35,
     fontSize: '16px'
   },
 
-  // معلومات الأستاذ
   TEACHER: {
     name: 'الأستاذ محمد عيسى',
     email: 'elsayedhasaneisa1@gmail.com',
     platformName: 'منصة الأستاذ محمد عيسى التعليمية'
   },
 
-  // الصفوف
   GRADES: [
     'الأول الثانوي',
     'الثاني الثانوي',
     'الثالث الثانوي'
-  ]
+  ],
+
+  // ═══════════════ إعدادات الجلسة الواحدة ═══════════════
+  SESSION: {
+    heartbeatInterval: 15000,  // كل 15 ثانية يحدث نبضة
+    checkInterval: 8000,        // كل 8 ثوانٍ يفحص هل الجلسة اتغيرت
+    staleAfter: 60000           // بعد دقيقة بدون نبضة تعتبر ميتة
+  }
 };
 
-// إنشاء عميل Supabase
 const supabaseClient = supabase.createClient(
   CONFIG.SUPABASE_URL,
   CONFIG.SUPABASE_KEY,
@@ -57,5 +57,4 @@ const supabaseClient = supabase.createClient(
   }
 );
 
-// اختصار
 const SB = supabaseClient;

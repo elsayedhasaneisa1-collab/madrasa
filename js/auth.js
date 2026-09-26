@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// المصادقة
+// المصادقة + الجلسة الواحدة
 // ═══════════════════════════════════════════════════════════
 
 let currentUser = null;
@@ -45,6 +45,7 @@ function updateAuthUI() {
   if (switchBtn) switchBtn.textContent = isSignup ? 'تسجيل الدخول' : 'إنشاء حساب';
 }
 
+// ═══════════════ معالجة الدخول ═══════════════
 async function handleAuth(e) {
   e.preventDefault();
 
@@ -79,12 +80,16 @@ async function handleAuth(e) {
       showToast('✅ تم إنشاء الحساب! تحقق من بريدك');
       closeAuth();
     } else {
+      // ═══ تسجيل دخول ═══
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      const fingerprint = getDeviceFingerprint();
+      // ✅ ابدأ الجلسة الواحدة
       const { data: { user } } = await supabaseClient.auth.getUser();
+      await startSession(user.id);
 
+      // حدّث بيانات الدخول
+      const fingerprint = getDeviceFingerprint();
       await supabaseClient.from('students')
         .update({
           last_login: new Date().toISOString(),
@@ -103,19 +108,41 @@ async function handleAuth(e) {
   }
 }
 
+// ═══════════════ تسجيل الخروج ═══════════════
 async function logout() {
+  if (currentUser) {
+    await stopSession(currentUser.id);
+  }
   await supabaseClient.auth.signOut();
   showToast('تم تسجيل الخروج');
 }
 
+// ═══════════════ التحقق من الجلسة ═══════════════
 async function checkSession() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session?.user) {
     currentUser = session.user;
+
+    // ✅ هل جلسة المستخدم الحالية موجودة؟
+    const { data: sessionRow } = await supabaseClient
+      .from('user_sessions')
+      .select('session_id')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+
+    if (!sessionRow) {
+      // جلسة جديدة (مثلاً بعد Refresh للصفحة)
+      await startSession(currentUser.id);
+    } else {
+      // جلسة قديمة — لازم نستبدلها
+      await startSession(currentUser.id);
+    }
+
     await onLogin();
   }
 }
 
+// ═══════════════ بعد تسجيل الدخول ═══════════════
 async function onLogin() {
   const { data: adminRow } = await supabaseClient
     .from('admins')
@@ -166,6 +193,7 @@ async function onLogin() {
   }
 }
 
+// ═══════════════ عند تسجيل الخروج ═══════════════
 function onLogoutUI() {
   isAdmin = false;
   currentUser = null;
