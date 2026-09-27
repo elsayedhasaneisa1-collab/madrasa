@@ -14,6 +14,9 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
 
@@ -22,6 +25,9 @@
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Navbar (بسيط) -->
+<!-- ═══════════════════════════════════════════════ -->
 <nav>
   <div class="logo" onclick="scrollToSection('home')">
     <div class="logo-icon">م.ع</div>
@@ -30,91 +36,63 @@
       <span class="logo-tag">منصة تعليمية</span>
     </div>
   </div>
-  <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()" aria-label="القائمة">
-    <i class="fas fa-bars"></i>
-  </button>
   <div class="nav-links" id="navLinks">
-    <div class="menu-header">
-      <div class="logo-icon small">م.ع</div>
-      <div>
-        <strong>الأستاذ محمد عيسى</strong>
-        <span>منصة تعليمية</span>
-      </div>
-      <button class="menu-close" onclick="toggleMenu()" aria-label="إغلاق">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <a onclick="scrollToSection('home')">
-      <i class="fas fa-home"></i>
-      <span>الرئيسية</span>
-    </a>
-    <a onclick="scrollToSection('about')">
-      <i class="fas fa-user-tie"></i>
-      <span>عن الأستاذ</span>
-    </a>
-    <a onclick="scrollToSection('access')">
-      <i class="fas fa-key"></i>
-      <span>الوصول</span>
-    </a>
-    <a onclick="scrollToSection('courses')">
-      <i class="fas fa-book"></i>
-      <span>الكورسات</span>
-    </a>
-    <a onclick="scrollToSection('features')">
-      <i class="fas fa-star"></i>
-      <span>المميزات</span>
-    </a>
-    <div class="menu-divider"></div>
-    <button class="btn menu-btn" id="adminBtn" style="display:none" onclick="location.href='admin.html'">
+    <button class="btn" id="adminBtn" style="display:none" onclick="location.href='admin.html'">
       <i class="fas fa-crown"></i> لوحة الأستاذ
     </button>
-    <button class="btn btn-outline menu-btn" id="loginBtn" onclick="location.href='login.html'">
+    <button class="btn" id="logoutBtn" style="display:none" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> خروج
+    </button>
+    <a href="login.html" class="btn btn-outline" id="loginNavBtn">
       <i class="fas fa-sign-in-alt"></i> دخول
-    </button>
-    <button class="btn menu-btn" id="registerBtn" onclick="location.href='register.html'">
+    </a>
+    <a href="register.html" class="btn" id="registerNavBtn">
       <i class="fas fa-user-plus"></i> حساب جديد
-    </button>
+    </a>
   </div>
 </nav>
 
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Hero (مختصر وأنيق) -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="hero" id="home">
-  <div class="hero-content reveal">
+  <div class="hero-content">
     <span class="hero-badge">
       <i class="fas fa-graduation-cap"></i> منصة تعليمية متكاملة
     </span>
     <h1>اكتشف طريقك للتفوق<br>مع الأستاذ محمد عيسى</h1>
-    <p>شرح مبسط، متابعة مستمرة، ومراجعات نهائية لأقوى المواد العلمية.</p>
+    <p>شرح مبسط • متابعة مستمرة • مراجعات نهائية</p>
     <div class="hero-buttons">
       <button class="btn btn-lg" onclick="scrollToSection('courses')">
-        🚀 ابدأ الآن
+        <i class="fas fa-rocket"></i> ابدأ الآن
       </button>
       <button class="btn btn-outline btn-lg" onclick="scrollToSection('about')">
-        تعرف على الأستاذ
+        <i class="fas fa-user-tie"></i> تعرف على الأستاذ
       </button>
-    </div>
-    <div class="hero-stats reveal delay-3">
-      <div class="hero-stat">
-        <span class="hero-stat-num">+5000</span>
-        <span class="hero-stat-label">طالب متفوق</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">+50</span>
-        <span class="hero-stat-label">كورس شامل</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">98%</span>
-        <span class="hero-stat-label">نسبة نجاح</span>
-      </div>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Courses -->
+<!-- ═══════════════════════════════════════════════ -->
+<section id="courses">
+  <h2 class="section-title">الكورسات المتاحة</h2>
+  <p class="section-subtitle">اختر كورسك وابدأ رحلة التفوق</p>
+  <div class="grid" id="coursesGrid">
+    <div class="empty-state"><div class="icon">⏳</div>جاري التحميل...</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- About -->
+<!-- ═══════════════════════════════════════════════ -->
 <section id="about" class="about-section">
-  <h2 class="section-title reveal">عن الأستاذ محمد عيسى</h2>
-  <p class="section-subtitle reveal delay-1">خبرة سنوات في تدريس المواد العلمية</p>
+  <h2 class="section-title">عن الأستاذ محمد عيسى</h2>
+  <p class="section-subtitle">خبرة سنوات في تدريس المواد العلمية</p>
   
   <div class="about-grid">
-    <div class="about-image reveal-left">
+    <div class="about-image">
       <img 
         src="assets/teacher.jpg" 
         alt="الأستاذ محمد عيسى"
@@ -126,7 +104,7 @@
       </div>
     </div>
     
-    <div class="about-content reveal-right">
+    <div class="about-content">
       <ul class="about-list">
         <li>شرح مبسط لكل درس</li>
         <li>تمارين مكثفة مع حلول</li>
@@ -137,10 +115,7 @@
       </ul>
       
       <div class="about-actions">
-        <a href="https://t.me/sayoda_elgadar" target="_blank" class="btn">
-          <i class="fab fa-telegram"></i> تواصل على تيليجرام
-        </a>
-        <a href="tel:01555814414" class="btn btn-outline">
+        <a href="tel:01555814414" class="btn">
           <i class="fas fa-phone"></i> 01555814414
         </a>
       </div>
@@ -148,149 +123,20 @@
   </div>
 </section>
 
-<section id="access" class="access-section">
-  <h2 class="section-title reveal">🏆 مميزات الوصول (Access)</h2>
-  <p class="section-subtitle reveal delay-1">وصول كامل لجميع المحتويات بدون حدود</p>
-  
-  <div class="access-grid">
-    <div class="access-card reveal delay-1">
-      <div class="access-icon"><i class="fas fa-infinity"></i></div>
-      <h4>وصول دائم</h4>
-      <p>دخول غير محدود لكل الكورسات والدروس لمدة كاملة</p>
-    </div>
-    <div class="access-card reveal delay-2">
-      <div class="access-icon"><i class="fas fa-clock"></i></div>
-      <h4>24/7 متاح</h4>
-      <p>شاهد المحتوى في أي وقت ومن أي مكان بدون قيود</p>
-    </div>
-    <div class="access-card reveal delay-3">
-      <div class="access-icon"><i class="fas fa-mobile-alt"></i></div>
-      <h4>جميع الأجهزة</h4>
-      <p>شغّل المنصة على الجوال والتابلت واللابتوب</p>
-    </div>
-    <div class="access-card reveal delay-4">
-      <div class="access-icon"><i class="fas fa-sync-alt"></i></div>
-      <h4>تحديثات مجانية</h4>
-      <p>كل الإضافات والتحسينات الجديدة تصلك تلقائياً</p>
-    </div>
-    <div class="access-card reveal delay-5">
-      <div class="access-icon"><i class="fas fa-headset"></i></div>
-      <h4>دعم فني دائم</h4>
-      <p>تواصل مباشر مع الأستاذ للإجابة على استفساراتك</p>
-    </div>
-    <div class="access-card reveal delay-6">
-      <div class="access-icon"><i class="fas fa-book"></i></div>
-      <h4>ملازم شاملة</h4>
-      <p>ملازم PDF جاهزة للطباعة مع حلول نموذجية</p>
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <h2 class="section-title reveal">ليه تختار منصتنا؟</h2>
-  <p class="section-subtitle reveal delay-1">مميزات بتخليك تتفوق</p>
-  
-  <div class="features-grid">
-    <div class="feature-card reveal delay-1">
-      <div class="feature-icon"><i class="fas fa-video"></i></div>
-      <h4>شرح مبسط لكل درس</h4>
-      <p>أسلوب تعليمي واضح يوصلك المعلومة بسهولة</p>
-    </div>
-    <div class="feature-card reveal delay-2">
-      <div class="feature-icon"><i class="fas fa-book-open"></i></div>
-      <h4>ملازم وتمارين شاملة</h4>
-      <p>ملازم PDF جاهزة للطباعة مع حلول نموذجية</p>
-    </div>
-    <div class="feature-card reveal delay-3">
-      <div class="feature-icon"><i class="fas fa-clipboard-check"></i></div>
-      <h4>امتحانات دورية</h4>
-      <p>اختبارات أسبوعية لقياس مستواك وتطويره</p>
-    </div>
-    <div class="feature-card reveal delay-4">
-      <div class="feature-icon"><i class="fas fa-comments"></i></div>
-      <h4>دعم مستمر</h4>
-      <p>تواصل مباشر مع الأستاذ عبر تيليجرام</p>
-    </div>
-    <div class="feature-card reveal delay-5">
-      <div class="feature-icon"><i class="fas fa-clock"></i></div>
-      <h4>24/7 متاح</h4>
-      <p>شاهد المحتوى في أي وقت ومن أي مكان</p>
-    </div>
-    <div class="feature-card reveal delay-6">
-      <div class="feature-icon"><i class="fas fa-tablet-alt"></i></div>
-      <h4>تعلم من أي مكان</h4>
-      <p>المنصة تشتغل على الجوال واللابتوب</p>
-    </div>
-  </div>
-</section>
-
-<section id="courses">
-  <h2 class="section-title reveal">الكورسات المتاحة</h2>
-  <p class="section-subtitle reveal delay-1">اختر كورسك وابدأ رحلة التفوق</p>
-  <div class="grid" id="coursesGrid">
-    <div class="empty-state"><div class="icon">⏳</div>جاري التحميل...</div>
-  </div>
-</section>
-
-<section id="announcements">
-  <h2 class="section-title reveal">الإعلانات</h2>
-  <p class="section-subtitle reveal delay-1">آخر الأخبار والتحديثات</p>
-  <div id="announcementsList">
-    <div class="empty-state"><div class="icon">⏳</div>جاري التحميل...</div>
-  </div>
-</section>
-
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Student Dashboard -->
+<!-- ═══════════════════════════════════════════════ -->
 <section id="dashboard" class="dashboard">
   <div class="dash-header">
     <h2>مرحباً، <span id="studentName">طالب</span> 👋</h2>
     <p style="color:#aaa">لوحة التحكم الخاصة بك</p>
   </div>
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('myCourses', this)">كورساتي</button>
-    <button class="tab" onclick="switchTab('allCourses', this)">جميع الكورسات</button>
-    <button class="tab" onclick="switchTab('profile', this)">الملف الشخصي</button>
-  </div>
   <div id="tabContent"></div>
 </section>
 
-<section id="adminPanel" class="dashboard" style="display:none">
-  <div class="dash-header">
-    <h2>👑 لوحة تحكم الأستاذ</h2>
-    <p style="color:#aaa">إدارة المنصة بالكامل</p>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="switchAdminTab('adminCourses', this)">📚 الكورسات</button>
-    <button class="tab" onclick="switchAdminTab('adminLessons', this)">🎬 الدروس</button>
-    <button class="tab" onclick="switchAdminTab('adminExams', this)">📝 الامتحانات</button>
-    <button class="tab" onclick="switchAdminTab('adminHomeworks', this)">📓 الواجبات</button>
-    <button class="tab" onclick="switchAdminTab('adminAnnouncements', this)">📢 الإعلانات</button>
-    <button class="tab" onclick="switchAdminTab('adminStudents', this)">👥 الطلاب</button>
-  </div>
-  <div id="adminTabContent"></div>
-</section>
-
-<div class="modal-overlay" id="authModal">
-  <div class="modal">
-    <button class="close-btn" onclick="closeAuth()">✕</button>
-    <h2 id="authTitle">تسجيل الدخول</h2>
-    <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="form-group" id="nameGroup" style="display:none">
-        <label>الاسم الكامل</label>
-        <input type="text" id="fullName" placeholder="أدخل اسمك">
-      </div>
-      <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="email" required placeholder="example@mail.com">
-      </div>
-      <div class="form-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="password" required minlength="6" placeholder="••••••••">
-      </div>
-      <button type="submit" class="btn" id="authSubmit">دخول</button>
-    </form>
-  </div>
-</div>
-
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Player Modal -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="modal-overlay" id="playerModal" style="padding:20px">
   <div class="modal" style="max-width:950px;padding:25px">
     <button class="close-btn" onclick="closeSecurePlayer()" style="z-index:100">✕</button>
@@ -298,14 +144,9 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="adminModal">
-  <div class="modal" style="max-width:600px">
-    <button class="close-btn" onclick="closeAdminModal()">✕</button>
-    <h2 id="adminModalTitle">إضافة</h2>
-    <div id="adminModalBody"></div>
-  </div>
-</div>
-
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Chat Modal -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="modal-overlay" id="chatModal">
   <div class="modal chat-modal-full" style="max-width:520px;padding:0;overflow:hidden">
     <div class="chat-header">
@@ -328,92 +169,44 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Toast -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
-<a href="https://t.me/sayoda_elgadar" target="_blank" class="telegram-float" title="تواصل على تيليجرام">
-  <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
-    <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
-  </svg>
-</a>
-
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 🎯 Bottom Bar — 5 تبويبات (التحكم الرئيسي) -->
+<!-- ═══════════════════════════════════════════════ -->
 <div class="bottom-bar" id="bottomBar">
-  <button class="bottom-item" onclick="scrollToSection('courses')" data-label="جميع الكورسات">
+  <button class="bottom-item" onclick="scrollToSection('courses')">
     <i class="fas fa-book"></i>
     <span>جميع الكورسات</span>
   </button>
   
-  <button class="bottom-item" onclick="openMyCourses()" data-label="كورساتي">
+  <button class="bottom-item" onclick="openMyCourses()">
     <i class="fas fa-graduation-cap"></i>
     <span>كورساتي</span>
   </button>
   
-  <button class="bottom-item chat-big" onclick="openChat()" data-label="شات المنصة">
+  <button class="bottom-item chat-big" onclick="openChat()">
     <i class="fas fa-comments"></i>
     <span>شات المنصة</span>
   </button>
   
-  <button class="bottom-item" onclick="scrollToSection('about')" data-label="عن المدرس">
+  <button class="bottom-item" onclick="scrollToSection('about')">
     <i class="fas fa-user-tie"></i>
     <span>عن المدرس</span>
   </button>
   
-  <a href="https://t.me/sayoda_elgadar" target="_blank" class="bottom-item" data-label="الدعم الفني">
+  <a href="https://t.me/sayoda_elgadar" target="_blank" class="bottom-item">
     <i class="fas fa-headset"></i>
     <span>الدعم الفني</span>
   </a>
 </div>
 
-<footer>
-  <div class="footer-content">
-    <div class="footer-brand">
-      <img 
-        src="assets/logo.png" 
-        alt="لوجو المنصة"
-        class="footer-logo-img"
-        onerror="this.src='https://ui-avatars.com/api/?name=محمد+عيسى&background=d4af37&color=1a1a1a&size=200&bold=true&rounded=true'">
-      <div class="footer-brand-text">
-        <h4>منصة الأستاذ محمد عيسى</h4>
-        <p>منصة تعليمية متكاملة للمرحلة الثانوية</p>
-        <img 
-          src="assets/teacher.jpg" 
-          alt="الأستاذ محمد عيسى"
-          class="footer-teacher-img"
-          onerror="this.src='https://ui-avatars.com/api/?name=محمد+عيسى&background=d4af37&color=1a1a1a&size=200&bold=true&rounded=true'">
-      </div>
-    </div>
-    
-    <div class="footer-links">
-      <h5>روابط سريعة</h5>
-      <a onclick="scrollToSection('home')">الرئيسية</a>
-      <a onclick="scrollToSection('about')">عن الأستاذ</a>
-      <a onclick="scrollToSection('access')">الوصول</a>
-      <a onclick="scrollToSection('courses')">الكورسات</a>
-    </div>
-    
-    <div class="footer-contact">
-      <h5>تواصل معنا</h5>
-      <a href="https://t.me/sayoda_elgadar" target="_blank">
-        <i class="fab fa-telegram" style="font-size:20px;"></i>
-        <span>@sayoda_elgadar</span>
-      </a>
-      <a href="tel:01555814414" target="_blank" style="margin-top:10px">
-        <i class="fas fa-phone" style="font-size:18px;"></i>
-        <span>01555814414</span>
-      </a>
-    </div>
-  </div>
-  
-  <div class="footer-bottom">
-    <p>© 2025 منصة <span class="gold">الأستاذ محمد عيسى</span> التعليمية — جميع الحقوق محفوظة</p>
-    <p class="dev-credit">
-      تطوير: 
-      <a href="https://t.me/sayoda_elgadar" target="_blank" class="dev-link">
-        <strong>EL-sayed Hasan</strong>
-      </a>
-    </p>
-  </div>
-</footer>
-
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Scripts -->
+<!-- ═══════════════════════════════════════════════ -->
 <script src="js/config.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/session.js"></script>
@@ -424,46 +217,13 @@
 <script src="js/app.js"></script>
 
 <script>
-const observerOptions = {
-  threshold: 0.15,
-  rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('active');
-    }
-  });
-}, observerOptions);
-
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
-  observer.observe(el);
-});
-
-function toggleMenu() {
-  const navLinks = document.getElementById('navLinks');
-  const menuToggle = document.getElementById('menuToggle');
-  navLinks.classList.toggle('open');
-  
-  const icon = menuToggle.querySelector('i');
-  if (navLinks.classList.contains('open')) {
-    icon.className = 'fas fa-times';
-    document.body.style.overflow = 'hidden';
-  } else {
-    icon.className = 'fas fa-bars';
-    document.body.style.overflow = '';
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth' });
   }
 }
-
-document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    const navLinks = document.getElementById('navLinks');
-    if (navLinks.classList.contains('open')) {
-      toggleMenu();
-    }
-  });
-});
 
 function openMyCourses() {
   if (!currentUser) {
@@ -472,24 +232,19 @@ function openMyCourses() {
     return;
   }
   
-  ['home', 'about', 'access', 'features', 'courses', 'announcements'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-  
   const dashboard = document.getElementById('dashboard');
   if (dashboard) {
     dashboard.classList.add('active');
     switchTab('myCourses');
-    scrollToSection('dashboard');
+    setTimeout(() => {
+      dashboard.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }
 }
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('✅ PWA registered:', reg.scope))
-      .catch(err => console.log('⚠️ PWA error:', err));
+    navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
 </script>
