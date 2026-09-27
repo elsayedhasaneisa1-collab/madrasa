@@ -23,6 +23,8 @@ const CONFIG = {
   TEACHER: {
     name: 'الأستاذ محمد عيسى',
     email: 'elsayedhasaneisa1@gmail.com',
+    phone: '01555814414',
+    telegram: 'sayoda_elgadar',
     platformName: 'منصة الأستاذ محمد عيسى التعليمية'
   },
 
@@ -32,11 +34,10 @@ const CONFIG = {
     'الثالث الثانوي'
   ],
 
-  // ═══════════════ إعدادات الجلسة الواحدة ═══════════════
   SESSION: {
-    heartbeatInterval: 15000,  // كل 15 ثانية يحدث نبضة
-    checkInterval: 8000,        // كل 8 ثوانٍ يفحص هل الجلسة اتغيرت
-    staleAfter: 60000           // بعد دقيقة بدون نبضة تعتبر ميتة
+    heartbeatInterval: 15000,
+    checkInterval: 8000,
+    staleAfter: 60000
   }
 };
 

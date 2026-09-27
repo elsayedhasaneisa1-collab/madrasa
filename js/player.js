@@ -12,7 +12,6 @@ let playerState = {
   type: 'video'
 };
 
-// ═══════════════ استخراج معرف يوتيوب ═══════════════
 function extractYouTubeId(url) {
   const patterns = [
     /youtube\.com\/watch\?v=([^&]+)/,
@@ -28,13 +27,11 @@ function extractYouTubeId(url) {
   return '';
 }
 
-// ═══════════════ استخراج معرف Vimeo ═══════════════
 function extractVimeoId(url) {
   const match = url.match(/vimeo\.com\/(\d+)/);
   return match ? match[1] : '';
 }
 
-// ═══════════════ فتح المشغل ═══════════════
 async function openSecurePlayer(lesson, studentName, studentId) {
   const modal = document.getElementById('playerModal');
   if (!modal) return;
@@ -44,7 +41,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
   let videoHTML = '';
   let type = 'video';
 
-  // ═══ اكتشف نوع الرابط ═══
   if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
     type = 'youtube';
     const videoId = extractYouTubeId(videoUrl);
@@ -54,7 +50,7 @@ async function openSecurePlayer(lesson, studentName, studentId) {
         width="100%" 
         height="100%" 
         style="position:absolute;inset:0;border:0;"
-        src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}"
+        src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&playsinline=1"
         frameborder="0" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen>
@@ -76,7 +72,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
       </iframe>
     `;
   } else if (videoUrl.includes('drive.google.com')) {
-    // Google Drive
     type = 'drive';
     let driveId = '';
     const match1 = videoUrl.match(/\/file\/d\/([^/]+)/);
@@ -95,7 +90,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
       </iframe>
     `;
   } else {
-    // فيديو مباشر MP4
     type = 'video';
     videoHTML = `
       <video 
@@ -112,7 +106,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
     `;
   }
 
-  // ═══ HTML المشغل ═══
   const body = document.getElementById('playerBody');
   body.innerHTML = `
     <div id="playerContainer" style="
@@ -129,7 +122,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
     ">
       <div id="videoContainer" style="position:absolute;inset:0;"></div>
 
-      <!-- 💧 العلامة المائية -->
       <div id="watermark" style="
         position:absolute;
         padding:8px 14px;
@@ -149,7 +141,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
         border: 1px solid rgba(212,175,55,0.3);
       ">${escapeHtml(studentName)} • ${escapeHtml(studentId.slice(0, 6))}</div>
 
-      <!-- 🛡️ Overlay الحماية -->
       <div id="protectionOverlay" style="
         position:absolute;inset:0;
         display:none;
@@ -180,7 +171,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
     </div>
   `;
 
-  // ═══ ضع الفيديو ═══
   document.getElementById('videoContainer').innerHTML = videoHTML;
 
   const container = document.getElementById('playerContainer');
@@ -195,14 +185,10 @@ async function openSecurePlayer(lesson, studentName, studentId) {
   playerState.type = type;
   playerState.overlay = overlay;
 
-  // ═══ تفعيل الحماية ═══
   activateAllProtection();
   applyProtection(container);
-
-  // ═══ حرك العلامة المائية ═══
   startWatermarkAnimation(watermark, container);
 
-  // ═══ كشف أدوات المطور ═══
   detectDevTools(() => {
     if (type === 'video' && video && video.pause) {
       video.pause();
@@ -228,7 +214,6 @@ async function openSecurePlayer(lesson, studentName, studentId) {
   window.addEventListener('beforeunload', cleanupPlayer);
 }
 
-// ═══════════════ حركة العلامة المائية ═══════════════
 function startWatermarkAnimation(watermark, container) {
   if (playerState.watermarkInterval) {
     clearInterval(playerState.watermarkInterval);
@@ -257,7 +242,6 @@ function startWatermarkAnimation(watermark, container) {
   window.addEventListener('resize', moveWatermark);
 }
 
-// ═══════════════ إغلاق المشغل ═══════════════
 function closeSecurePlayer() {
   cleanupPlayer();
   const modal = document.getElementById('playerModal');
@@ -266,7 +250,6 @@ function closeSecurePlayer() {
   if (body) body.innerHTML = '';
 }
 
-// ═══════════════ تنظيف ═══════════════
 function cleanupPlayer() {
   if (playerState.video && playerState.video.tagName === 'VIDEO') {
     try {

@@ -45,7 +45,6 @@ function updateAuthUI() {
   if (switchBtn) switchBtn.textContent = isSignup ? 'تسجيل الدخول' : 'إنشاء حساب';
 }
 
-// ═══════════════ معالجة الدخول ═══════════════
 async function handleAuth(e) {
   e.preventDefault();
 
@@ -80,15 +79,12 @@ async function handleAuth(e) {
       showToast('✅ تم إنشاء الحساب! تحقق من بريدك');
       closeAuth();
     } else {
-      // ═══ تسجيل دخول ═══
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      // ✅ ابدأ الجلسة الواحدة
       const { data: { user } } = await supabaseClient.auth.getUser();
       await startSession(user.id);
 
-      // حدّث بيانات الدخول
       const fingerprint = getDeviceFingerprint();
       await supabaseClient.from('students')
         .update({
@@ -108,7 +104,6 @@ async function handleAuth(e) {
   }
 }
 
-// ═══════════════ تسجيل الخروج ═══════════════
 async function logout() {
   if (currentUser) {
     await stopSession(currentUser.id);
@@ -117,32 +112,15 @@ async function logout() {
   showToast('تم تسجيل الخروج');
 }
 
-// ═══════════════ التحقق من الجلسة ═══════════════
 async function checkSession() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session?.user) {
     currentUser = session.user;
-
-    // ✅ هل جلسة المستخدم الحالية موجودة؟
-    const { data: sessionRow } = await supabaseClient
-      .from('user_sessions')
-      .select('session_id')
-      .eq('user_id', currentUser.id)
-      .maybeSingle();
-
-    if (!sessionRow) {
-      // جلسة جديدة (مثلاً بعد Refresh للصفحة)
-      await startSession(currentUser.id);
-    } else {
-      // جلسة قديمة — لازم نستبدلها
-      await startSession(currentUser.id);
-    }
-
+    await startSession(currentUser.id);
     await onLogin();
   }
 }
 
-// ═══════════════ بعد تسجيل الدخول ═══════════════
 async function onLogin() {
   const { data: adminRow } = await supabaseClient
     .from('admins')
@@ -153,15 +131,8 @@ async function onLogin() {
   isAdmin = !!adminRow;
 
   const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
   const adminBtn = document.getElementById('adminBtn');
-
-  if (loginBtn) {
-    loginBtn.textContent = 'خروج';
-    loginBtn.onclick = logout;
-  }
-  if (adminBtn) {
-    adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
-  }
 
   if (!isAdmin) {
     const { data } = await supabaseClient
@@ -176,7 +147,25 @@ async function onLogin() {
     }
   }
 
-  ['home', 'courses', 'announcements'].forEach(id => {
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (registerBtn) registerBtn.style.display = 'none';
+  if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+
+  let logoutBtn = document.getElementById('logoutBtn');
+  if (!logoutBtn) {
+    const navLinks = document.getElementById('navLinks');
+    if (navLinks) {
+      logoutBtn = document.createElement('button');
+      logoutBtn.id = 'logoutBtn';
+      logoutBtn.className = 'btn btn-outline menu-btn';
+      logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> خروج';
+      logoutBtn.onclick = logout;
+      navLinks.appendChild(logoutBtn);
+    }
+  }
+  if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+
+  ['home', 'courses', 'announcements', 'about', 'access', 'features'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -193,21 +182,24 @@ async function onLogin() {
   }
 }
 
-// ═══════════════ عند تسجيل الخروج ═══════════════
 function onLogoutUI() {
   isAdmin = false;
   currentUser = null;
 
   const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
   const adminBtn = document.getElementById('adminBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
 
   if (loginBtn) {
-    loginBtn.textContent = 'تسجيل الدخول';
-    loginBtn.onclick = () => openAuth('login');
+    loginBtn.style.display = 'inline-flex';
+    loginBtn.onclick = () => location.href = 'login.html';
   }
+  if (registerBtn) registerBtn.style.display = 'inline-flex';
   if (adminBtn) adminBtn.style.display = 'none';
+  if (logoutBtn) logoutBtn.style.display = 'none';
 
-  ['home', 'courses', 'announcements'].forEach(id => {
+  ['home', 'courses', 'announcements', 'about', 'access', 'features'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'block';
   });

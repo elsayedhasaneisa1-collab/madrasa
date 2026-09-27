@@ -2,7 +2,6 @@
 // 👑 لوحة تحكم الأستاذ - النسخة الكاملة
 // ═══════════════════════════════════════════════════════════
 
-// ═══════════════ التبديل بين التبويبات ═══════════════
 async function switchAdminTab(tab, el) {
   if (el) {
     document.querySelectorAll('#adminPanel .tab').forEach(t => t.classList.remove('active'));
@@ -21,9 +20,6 @@ async function switchAdminTab(tab, el) {
   else if (tab === 'adminStudents') await renderAdminStudents(content);
 }
 
-// ═══════════════════════════════════════════════════════════
-// 📚 الكورسات
-// ═══════════════════════════════════════════════════════════
 async function renderAdminCourses(content) {
   const { data } = await supabaseClient
     .from('courses').select('*').order('created_at', { ascending: false });
@@ -39,7 +35,6 @@ async function renderAdminCourses(content) {
           <p>
             <span class="timer-badge">${escapeHtml(c.grade || 'عام')}</span>
             <span class="timer-badge">💰 ${c.price} ج.م</span>
-            ${c.description ? ' • ' + escapeHtml(c.description.slice(0, 60)) + (c.description.length > 60 ? '...' : '') : ''}
           </p>
         </div>
         <div class="item-actions">
@@ -53,30 +48,20 @@ async function renderAdminCourses(content) {
 function openCourseForm(course = null) {
   const isEdit = !!course;
   openAdminModal(isEdit ? '✏️ تعديل كورس' : '➕ إضافة كورس', `
-    <div class="form-group">
-      <label>عنوان الكورس *</label>
-      <input id="cfTitle" value="${escapeHtml(course?.title || '')}">
-    </div>
-    <div class="form-group">
-      <label>الوصف</label>
+    <div class="form-group"><label>عنوان الكورس *</label>
+      <input id="cfTitle" value="${escapeHtml(course?.title || '')}"></div>
+    <div class="form-group"><label>الوصف</label>
       <textarea id="cfDesc" rows="3" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);
-        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(course?.description || '')}</textarea>
-    </div>
-    <div class="form-group">
-      <label>السعر (ج.م)</label>
-      <input id="cfPrice" type="number" value="${course?.price ?? 0}" min="0">
-    </div>
-    <div class="form-group">
-      <label>الصف</label>
+        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(course?.description || '')}</textarea></div>
+    <div class="form-group"><label>السعر (ج.م)</label>
+      <input id="cfPrice" type="number" value="${course?.price ?? 0}" min="0"></div>
+    <div class="form-group"><label>الصف</label>
       <select id="cfGrade">
         <option value="">اختر</option>
         ${CONFIG.GRADES.map(g => `<option ${course?.grade === g ? 'selected' : ''}>${g}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group">
-      <label>🔗 رابط صورة الكورس</label>
-      <input id="cfImage" value="${escapeHtml(course?.image_url || '')}" placeholder="https://...">
-    </div>
+      </select></div>
+    <div class="form-group"><label>🔗 رابط صورة الكورس</label>
+      <input id="cfImage" value="${escapeHtml(course?.image_url || '')}" placeholder="https://..."></div>
     <button class="btn" onclick="saveCourse(${course?.id || 'null'})">💾 حفظ</button>
   `);
 }
@@ -95,7 +80,6 @@ async function saveCourse(id) {
 
   const btn = event.target;
   btn.disabled = true;
-  btn.textContent = 'جاري الحفظ...';
 
   try {
     let error;
@@ -105,7 +89,7 @@ async function saveCourse(id) {
 
     showToast('✅ تم الحفظ');
     closeAdminModal();
-    await loadCourses();
+    if (typeof loadCourses === 'function') await loadCourses();
     switchAdminTab('adminCourses');
   } catch (err) {
     showToast(err.message, true);
@@ -119,13 +103,10 @@ async function deleteCourse(id) {
   const { error } = await supabaseClient.from('courses').delete().eq('id', id);
   if (error) { showToast(error.message, true); return; }
   showToast('تم الحذف');
-  await loadCourses();
+  if (typeof loadCourses === 'function') await loadCourses();
   switchAdminTab('adminCourses');
 }
 
-// ═══════════════════════════════════════════════════════════
-// 🎬 الدروس
-// ═══════════════════════════════════════════════════════════
 async function renderAdminLessons(content) {
   const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
 
@@ -168,12 +149,10 @@ async function openLessonForm(lesson = null) {
   const isEdit = !!lesson;
 
   openAdminModal(isEdit ? '✏️ تعديل درس' : '➕ إضافة درس', `
-    <div class="form-group">
-      <label>الكورس *</label>
+    <div class="form-group"><label>الكورس *</label>
       <select id="lfCourse">
         ${(courses || []).map(c => `<option value="${c.id}" ${lesson?.course_id === c.id ? 'selected' : ''}>${escapeHtml(c.title)}</option>`).join('')}
-      </select>
-    </div>
+      </select></div>
     <div class="form-group"><label>عنوان الدرس *</label>
       <input id="lfTitle" value="${escapeHtml(lesson?.title || '')}"></div>
     <div class="form-group"><label>المدة</label>
@@ -226,11 +205,7 @@ async function deleteLesson(id) {
   switchAdminTab('adminLessons');
 }
 
-// ═══════════════════════════════════════════════════════════
-// 📝 الامتحانات
-// ═══════════════════════════════════════════════════════════
 async function renderAdminExams(content) {
-  // نظّف الامتحانات المنتهية أولاً
   await cleanupExpiredExams();
 
   const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
@@ -255,76 +230,51 @@ async function renderAdminExams(content) {
 
   const now = new Date();
 
-  list.innerHTML = `
-    <div class="expired-notice">
-      ℹ️ الامتحانات المنتهية مدتها يتم حذفها تلقائياً
-    </div>
-    ${exams.map(e => {
-      const expiresAt = e.expires_at ? new Date(e.expires_at) : null;
-      const isExpired = expiresAt && expiresAt < now;
-      const remaining = expiresAt ? Math.max(0, Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))) : 0;
+  list.innerHTML = exams.map(e => {
+    const expiresAt = e.expires_at ? new Date(e.expires_at) : null;
+    const isExpired = expiresAt && expiresAt < now;
+    const remaining = expiresAt ? Math.max(0, Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))) : 0;
 
-      return `
-        <div class="item-row">
-          <div class="item-info">
-            <h4>📝 ${escapeHtml(e.title)}</h4>
-            <p>
-              <span class="timer-badge">📚 ${escapeHtml(e.courses?.title || '-')}</span>
-              <span class="timer-badge">⏱ ${e.duration || 0} دقيقة</span>
-              ${expiresAt ? `<span class="timer-badge ${isExpired ? 'danger' : 'success'}">
-                ${isExpired ? '❌ منتهي' : `⏳ ${remaining} يوم`}
-              </span>` : ''}
-            </p>
-            ${e.instructions ? `<p style="margin-top:6px;color:#aaa;font-size:12px">${escapeHtml(e.instructions.slice(0, 80))}${e.instructions.length > 80 ? '...' : ''}</p>` : ''}
-          </div>
-          <div class="item-actions">
-            <button class="btn btn-outline" onclick='openExamForm(${JSON.stringify(e).replace(/'/g, "&#39;")})'>✏️</button>
-            <button class="btn btn-outline" onclick="deleteExam(${e.id})">🗑️</button>
-          </div>
-        </div>`;
-    }).join('')}
-  `;
+    return `
+      <div class="item-row">
+        <div class="item-info">
+          <h4>📝 ${escapeHtml(e.title)}</h4>
+          <p>
+            <span class="timer-badge">📚 ${escapeHtml(e.courses?.title || '-')}</span>
+            <span class="timer-badge">⏱ ${e.duration || 0} دقيقة</span>
+            ${expiresAt ? `<span class="timer-badge ${isExpired ? 'danger' : 'success'}">
+              ${isExpired ? '❌ منتهي' : `⏳ ${remaining} يوم`}
+            </span>` : ''}
+          </p>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-outline" onclick='openExamForm(${JSON.stringify(e).replace(/'/g, "&#39;")})'>✏️</button>
+          <button class="btn btn-outline" onclick="deleteExam(${e.id})">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function openExamForm(exam = null) {
   const isEdit = !!exam;
 
   openAdminModal(isEdit ? '✏️ تعديل امتحان' : '➕ إضافة امتحان', `
-    <div class="form-group">
-      <label>عنوان الامتحان *</label>
-      <input id="efTitle" value="${escapeHtml(exam?.title || '')}" placeholder="مثال: امتحان الوحدة الأولى">
-    </div>
-    <div class="form-group">
-      <label>الكورس *</label>
-      <select id="efCourse">
-        ${(window._adminCourses || []).map(c =>
-          `<option value="${c.id}" ${exam?.course_id === c.id ? 'selected' : ''}>${escapeHtml(c.title)}</option>`
-        ).join('')}
-      </select>
-    </div>
-    <div class="form-group">
-      <label>⏱ مدة الامتحان (بالدقائق) *</label>
-      <input id="efDuration" type="number" value="${exam?.duration ?? 30}" min="1" placeholder="30">
-      <small style="color:#888;font-size:12px">مدة الامتحان للطالب</small>
-    </div>
-    <div class="form-group">
-      <label>⏳ مدة السريان (بالأيام) *</label>
-      <input id="efExpiryDays" type="number" value="7" min="1" placeholder="7">
-      <small style="color:#888;font-size:12px">بعد انتهاء المدة، يُحذف الامتحان تلقائياً من قاعدة البيانات</small>
-    </div>
-    <div class="form-group">
-      <label>📝 تعليمات الامتحان</label>
+    <div class="form-group"><label>عنوان الامتحان *</label>
+      <input id="efTitle" value="${escapeHtml(exam?.title || '')}"></div>
+    <div class="form-group"><label>الكورس *</label>
+      <select id="efCourse"></select></div>
+    <div class="form-group"><label>⏱ مدة الامتحان (دقائق) *</label>
+      <input id="efDuration" type="number" value="${exam?.duration ?? 30}" min="1"></div>
+    <div class="form-group"><label>⏳ مدة السريان (أيام) *</label>
+      <input id="efExpiryDays" type="number" value="7" min="1"></div>
+    <div class="form-group"><label>📝 تعليمات</label>
       <textarea id="efInstructions" rows="3" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);
-        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical"
-        placeholder="اكتب تعليمات للطلاب">${escapeHtml(exam?.instructions || '')}</textarea>
-    </div>
+        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(exam?.instructions || '')}</textarea></div>
     <button class="btn" onclick="saveExam(${exam?.id || 'null'})">💾 حفظ</button>
   `);
 
-  // حمّل الكورسات للقائمة
   (async () => {
     const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
-    window._adminCourses = courses || [];
     const select = document.getElementById('efCourse');
     if (select) {
       select.innerHTML = (courses || []).map(c =>
@@ -356,7 +306,6 @@ async function saveExam(id) {
 
   const btn = event.target;
   btn.disabled = true;
-  btn.textContent = 'جاري الحفظ...';
 
   try {
     let error;
@@ -385,20 +334,14 @@ async function deleteExam(id) {
 async function cleanupExpiredExams() {
   const now = new Date().toISOString();
   try {
-    const { error } = await supabaseClient
-      .from('exams').delete().lt('expires_at', now);
-    if (error) console.warn('فشل تنظيف الامتحانات:', error);
+    await supabaseClient.from('exams').delete().lt('expires_at', now);
   } catch (err) {
     console.warn('خطأ في التنظيف:', err);
   }
 }
 
-// تنظيف دوري كل 5 دقايق
 setInterval(cleanupExpiredExams, 5 * 60 * 1000);
 
-// ═══════════════════════════════════════════════════════════
-// 📓 الواجبات
-// ═══════════════════════════════════════════════════════════
 async function renderAdminHomeworks(content) {
   const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
 
@@ -436,7 +379,6 @@ async function renderAdminHomeworks(content) {
               ${isOverdue ? '❌ منتهي' : `📅 ${dueDate.toLocaleDateString('ar-EG')}`}
             </span>` : ''}
           </p>
-          ${h.description ? `<p style="margin-top:6px;color:#aaa;font-size:12px">${escapeHtml(h.description.slice(0, 80))}${h.description.length > 80 ? '...' : ''}</p>` : ''}
         </div>
         <div class="item-actions">
           <button class="btn btn-outline" onclick='openHomeworkForm(${JSON.stringify(h).replace(/'/g, "&#39;")})'>✏️</button>
@@ -450,28 +392,17 @@ function openHomeworkForm(hw = null) {
   const isEdit = !!hw;
 
   openAdminModal(isEdit ? '✏️ تعديل واجب' : '➕ إضافة واجب', `
-    <div class="form-group">
-      <label>عنوان الواجب *</label>
-      <input id="hfTitle" value="${escapeHtml(hw?.title || '')}" placeholder="مثال: واجب الفصل الأول">
-    </div>
-    <div class="form-group">
-      <label>الكورس *</label>
-      <select id="hfCourse"></select>
-    </div>
-    <div class="form-group">
-      <label>📅 تاريخ التسليم</label>
-      <input id="hfDueDate" type="datetime-local" value="${hw?.due_date ? new Date(hw.due_date).toISOString().slice(0, 16) : ''}">
-    </div>
-    <div class="form-group">
-      <label>📝 تفاصيل الواجب</label>
+    <div class="form-group"><label>عنوان الواجب *</label>
+      <input id="hfTitle" value="${escapeHtml(hw?.title || '')}"></div>
+    <div class="form-group"><label>الكورس *</label>
+      <select id="hfCourse"></select></div>
+    <div class="form-group"><label>📅 تاريخ التسليم</label>
+      <input id="hfDueDate" type="datetime-local" value="${hw?.due_date ? new Date(hw.due_date).toISOString().slice(0, 16) : ''}"></div>
+    <div class="form-group"><label>📝 تفاصيل الواجب</label>
       <textarea id="hfDescription" rows="4" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);
-        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical"
-        placeholder="اكتب تفاصيل الواجب">${escapeHtml(hw?.description || '')}</textarea>
-    </div>
-    <div class="form-group">
-      <label>🔗 رابط إضافي (اختياري)</label>
-      <input id="hfLink" value="${escapeHtml(hw?.link || '')}" placeholder="https://...">
-    </div>
+        border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:inherit;resize:vertical">${escapeHtml(hw?.description || '')}</textarea></div>
+    <div class="form-group"><label>🔗 رابط إضافي</label>
+      <input id="hfLink" value="${escapeHtml(hw?.link || '')}" placeholder="https://..."></div>
     <button class="btn" onclick="saveHomework(${hw?.id || 'null'})">💾 حفظ</button>
   `);
 
@@ -530,9 +461,6 @@ async function deleteHomework(id) {
   switchAdminTab('adminHomeworks');
 }
 
-// ═══════════════════════════════════════════════════════════
-// 📢 الإعلانات
-// ═══════════════════════════════════════════════════════════
 async function renderAdminAnnouncements(content) {
   const { data } = await supabaseClient
     .from('announcements').select('*').order('created_at', { ascending: false });
@@ -582,7 +510,7 @@ async function saveAnnouncement(id) {
   if (error) { showToast(error.message, true); return; }
   showToast('✅ تم الحفظ');
   closeAdminModal();
-  await loadAnnouncements();
+  if (typeof loadAnnouncements === 'function') await loadAnnouncements();
   switchAdminTab('adminAnnouncements');
 }
 
@@ -591,13 +519,10 @@ async function deleteAnnouncement(id) {
   const { error } = await supabaseClient.from('announcements').delete().eq('id', id);
   if (error) { showToast(error.message, true); return; }
   showToast('تم الحذف');
-  await loadAnnouncements();
+  if (typeof loadAnnouncements === 'function') await loadAnnouncements();
   switchAdminTab('adminAnnouncements');
 }
 
-// ═══════════════════════════════════════════════════════════
-// 👥 الطلاب
-// ═══════════════════════════════════════════════════════════
 async function renderAdminStudents(content) {
   const { data: enr } = await supabaseClient
     .from('enrollments')
@@ -663,9 +588,6 @@ async function deleteEnrollment(id) {
   switchAdminTab('adminStudents');
 }
 
-// ═══════════════════════════════════════════════════════════
-// Modal
-// ═══════════════════════════════════════════════════════════
 function openAdminModal(title, bodyHtml) {
   const titleEl = document.getElementById('adminModalTitle');
   const bodyEl = document.getElementById('adminModalBody');

@@ -32,7 +32,7 @@ function renderCourseCard(c) {
   return `
     <div class="card reveal">
       <div class="card-img">
-        ${c.image_url ? `<img src="${escapeHtml(c.image_url)}" alt="">` : '📖'}
+        ${c.image_url ? `<img src="${escapeHtml(c.image_url)}" alt="" onerror="this.style.display='none'">` : '📖'}
       </div>
       <div class="card-body">
         <span class="card-grade">${escapeHtml(c.grade || 'عام')}</span>
@@ -76,8 +76,8 @@ async function loadAnnouncements() {
 
 async function enroll(courseId) {
   if (!currentUser) {
-    openAuth('login');
     showToast('سجّل الدخول أولاً', true);
+    setTimeout(() => location.href = 'login.html', 800);
     return;
   }
 
