@@ -1,7 +1,8 @@
 // ═══════════════════════════════════════════════════════════
-// 👑 لوحة تحكم الأستاذ - النسخة الكاملة
+// 👑 لوحة تحكم الأستاذ محمد عيسى - النسخة الكاملة المحدثة
 // ═══════════════════════════════════════════════════════════
 
+// ═══════════════ التبديل بين التبويبات ═══════════════
 async function switchAdminTab(tab, el) {
   if (el) {
     document.querySelectorAll('#adminPanel .tab').forEach(t => t.classList.remove('active'));
@@ -20,6 +21,9 @@ async function switchAdminTab(tab, el) {
   else if (tab === 'adminStudents') await renderAdminStudents(content);
 }
 
+// ═══════════════════════════════════════════════════════════
+// 📚 الكورسات
+// ═══════════════════════════════════════════════════════════
 async function renderAdminCourses(content) {
   const { data } = await supabaseClient
     .from('courses').select('*').order('created_at', { ascending: false });
@@ -107,6 +111,9 @@ async function deleteCourse(id) {
   switchAdminTab('adminCourses');
 }
 
+// ═══════════════════════════════════════════════════════════
+// 🎬 الدروس
+// ═══════════════════════════════════════════════════════════
 async function renderAdminLessons(content) {
   const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
 
@@ -121,19 +128,23 @@ async function renderAdminLessons(content) {
   }
 
   const { data: lessons } = await supabaseClient
-    .from('lessons').select('*, courses(title)').order('course_id').order('order');
+    .from('lessons').select('*').order('course_id').order('order');
 
   if (!lessons?.length) {
     list.innerHTML = '<div class="empty-state"><div class="icon">🎬</div>لا توجد دروس</div>';
     return;
   }
 
+  // جلب الكورسات لمطابقة الأسماء
+  const coursesMap = {};
+  courses.forEach(c => coursesMap[c.id] = c);
+
   list.innerHTML = lessons.map(l => `
     <div class="item-row">
       <div class="item-info">
         <h4>🎬 ${escapeHtml(l.title)}</h4>
         <p>
-          <span class="timer-badge">📚 ${escapeHtml(l.courses?.title || '-')}</span>
+          <span class="timer-badge">📚 ${escapeHtml(coursesMap[l.course_id]?.title || '-')}</span>
           <span class="timer-badge">⏱ ${escapeHtml(l.duration || '-')}</span>
         </p>
       </div>
@@ -205,6 +216,9 @@ async function deleteLesson(id) {
   switchAdminTab('adminLessons');
 }
 
+// ═══════════════════════════════════════════════════════════
+// 📝 الامتحانات
+// ═══════════════════════════════════════════════════════════
 async function renderAdminExams(content) {
   await cleanupExpiredExams();
 
@@ -221,12 +235,15 @@ async function renderAdminExams(content) {
   }
 
   const { data: exams } = await supabaseClient
-    .from('exams').select('*, courses(title)').order('created_at', { ascending: false });
+    .from('exams').select('*').order('created_at', { ascending: false });
 
   if (!exams?.length) {
     list.innerHTML = '<div class="empty-state"><div class="icon">📝</div>لا توجد امتحانات</div>';
     return;
   }
+
+  const coursesMap = {};
+  courses.forEach(c => coursesMap[c.id] = c);
 
   const now = new Date();
 
@@ -240,7 +257,7 @@ async function renderAdminExams(content) {
         <div class="item-info">
           <h4>📝 ${escapeHtml(e.title)}</h4>
           <p>
-            <span class="timer-badge">📚 ${escapeHtml(e.courses?.title || '-')}</span>
+            <span class="timer-badge">📚 ${escapeHtml(coursesMap[e.course_id]?.title || '-')}</span>
             <span class="timer-badge">⏱ ${e.duration || 0} دقيقة</span>
             ${expiresAt ? `<span class="timer-badge ${isExpired ? 'danger' : 'success'}">
               ${isExpired ? '❌ منتهي' : `⏳ ${remaining} يوم`}
@@ -342,6 +359,9 @@ async function cleanupExpiredExams() {
 
 setInterval(cleanupExpiredExams, 5 * 60 * 1000);
 
+// ═══════════════════════════════════════════════════════════
+// 📓 الواجبات
+// ═══════════════════════════════════════════════════════════
 async function renderAdminHomeworks(content) {
   const { data: courses } = await supabaseClient.from('courses').select('id,title').order('title');
 
@@ -356,12 +376,15 @@ async function renderAdminHomeworks(content) {
   }
 
   const { data: hws } = await supabaseClient
-    .from('homeworks').select('*, courses(title)').order('created_at', { ascending: false });
+    .from('homeworks').select('*').order('created_at', { ascending: false });
 
   if (!hws?.length) {
     list.innerHTML = '<div class="empty-state"><div class="icon">📓</div>لا توجد واجبات</div>';
     return;
   }
+
+  const coursesMap = {};
+  courses.forEach(c => coursesMap[c.id] = c);
 
   const now = new Date();
 
@@ -374,7 +397,7 @@ async function renderAdminHomeworks(content) {
         <div class="item-info">
           <h4>📓 ${escapeHtml(h.title)}</h4>
           <p>
-            <span class="timer-badge">📚 ${escapeHtml(h.courses?.title || '-')}</span>
+            <span class="timer-badge">📚 ${escapeHtml(coursesMap[h.course_id]?.title || '-')}</span>
             ${dueDate ? `<span class="timer-badge ${isOverdue ? 'danger' : 'success'}">
               ${isOverdue ? '❌ منتهي' : `📅 ${dueDate.toLocaleDateString('ar-EG')}`}
             </span>` : ''}
@@ -461,6 +484,9 @@ async function deleteHomework(id) {
   switchAdminTab('adminHomeworks');
 }
 
+// ═══════════════════════════════════════════════════════════
+// 📢 الإعلانات
+// ═══════════════════════════════════════════════════════════
 async function renderAdminAnnouncements(content) {
   const { data } = await supabaseClient
     .from('announcements').select('*').order('created_at', { ascending: false });
@@ -523,17 +549,51 @@ async function deleteAnnouncement(id) {
   switchAdminTab('adminAnnouncements');
 }
 
+// ═══════════════════════════════════════════════════════════
+// 👥 الطلاب — النسخة المحدثة (بدون الاعتماد على العلاقات)
+// ═══════════════════════════════════════════════════════════
 async function renderAdminStudents(content) {
-  const { data: enr } = await supabaseClient
+  // ═══ 1) جلب الاشتراكات ═══
+  const { data: enr, error: enrError } = await supabaseClient
     .from('enrollments')
-    .select('*, courses(title), students:student_id(full_name, phone, parent_phone, gender, grade)')
+    .select('*')
     .order('created_at', { ascending: false });
+
+  if (enrError) {
+    content.innerHTML = `<div class="empty-state">
+      <div class="icon">⚠️</div>
+      خطأ: ${enrError.message}
+    </div>`;
+    return;
+  }
 
   if (!enr?.length) {
     content.innerHTML = '<div class="empty-state"><div class="icon">👥</div>لا توجد اشتراكات</div>';
     return;
   }
 
+  // ═══ 2) جلب الطلاب ═══
+  const studentIds = [...new Set(enr.map(e => e.student_id))];
+  const { data: students } = await supabaseClient
+    .from('students')
+    .select('*')
+    .in('id', studentIds);
+
+  // ═══ 3) جلب الكورسات ═══
+  const courseIds = [...new Set(enr.map(e => e.course_id))];
+  const { data: courses } = await supabaseClient
+    .from('courses')
+    .select('id,title')
+    .in('id', courseIds);
+
+  // ═══ 4) إنشاء Maps ═══
+  const studentsMap = {};
+  (students || []).forEach(s => studentsMap[s.id] = s);
+
+  const coursesMap = {};
+  (courses || []).forEach(c => coursesMap[c.id] = c);
+
+  // ═══ 5) عرض الجدول ═══
   content.innerHTML = `
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;background:var(--dark-2);border-radius:12px;overflow:hidden">
@@ -550,24 +610,28 @@ async function renderAdminStudents(content) {
           </tr>
         </thead>
         <tbody>
-          ${enr.map(e => `
-            <tr style="border-bottom:1px solid rgba(212,175,55,0.1)">
-              <td style="padding:12px">${escapeHtml(e.students?.full_name || '-')}</td>
-              <td style="padding:12px">${e.students?.gender === 'male' ? '👦' : e.students?.gender === 'female' ? '👧' : '-'}</td>
-              <td style="padding:12px">${escapeHtml(e.students?.phone || '-')}</td>
-              <td style="padding:12px">${escapeHtml(e.students?.parent_phone || '-')}</td>
-              <td style="padding:12px">${escapeHtml(e.students?.grade || '-')}</td>
-              <td style="padding:12px">${escapeHtml(e.courses?.title || '-')}</td>
-              <td style="padding:12px">${
-                e.status === 'approved' ? '✅ مفعّل' :
-                e.status === 'rejected' ? '❌ مرفوض' : '⏳ انتظار'
-              }</td>
-              <td style="padding:12px;display:flex;gap:6px;flex-wrap:wrap">
-                ${e.status !== 'approved' ? `<button class="btn" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'approved')">✅</button>` : ''}
-                ${e.status !== 'rejected' ? `<button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'rejected')">❌</button>` : ''}
-                <button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="deleteEnrollment(${e.id})">🗑️</button>
-              </td>
-            </tr>`).join('')}
+          ${enr.map(e => {
+            const s = studentsMap[e.student_id] || {};
+            const c = coursesMap[e.course_id] || {};
+            return `
+              <tr style="border-bottom:1px solid rgba(212,175,55,0.1)">
+                <td style="padding:12px">${escapeHtml(s.full_name || '-')}</td>
+                <td style="padding:12px">${s.gender === 'male' ? '👦' : s.gender === 'female' ? '👧' : '-'}</td>
+                <td style="padding:12px">${escapeHtml(s.phone || '-')}</td>
+                <td style="padding:12px">${escapeHtml(s.parent_phone || '-')}</td>
+                <td style="padding:12px">${escapeHtml(s.grade || '-')}</td>
+                <td style="padding:12px">${escapeHtml(c.title || '-')}</td>
+                <td style="padding:12px">${
+                  e.status === 'approved' ? '✅ مفعّل' :
+                  e.status === 'rejected' ? '❌ مرفوض' : '⏳ انتظار'
+                }</td>
+                <td style="padding:12px;display:flex;gap:6px;flex-wrap:wrap">
+                  ${e.status !== 'approved' ? `<button class="btn" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'approved')">✅</button>` : ''}
+                  ${e.status !== 'rejected' ? `<button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'rejected')">❌</button>` : ''}
+                  <button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="deleteEnrollment(${e.id})">🗑️</button>
+                </td>
+              </tr>`;
+          }).join('')}
         </tbody>
       </table>
     </div>`;
@@ -588,6 +652,9 @@ async function deleteEnrollment(id) {
   switchAdminTab('adminStudents');
 }
 
+// ═══════════════════════════════════════════════════════════
+// Modal
+// ═══════════════════════════════════════════════════════════
 function openAdminModal(title, bodyHtml) {
   const titleEl = document.getElementById('adminModalTitle');
   const bodyEl = document.getElementById('adminModalBody');
