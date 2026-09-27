@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// 👑 لوحة تحكم الأستاذ محمد عيسى - النسخة الكاملة المحدثة
+// 👑 لوحة تحكم الأستاذ - النسخة المضمونة
 // ═══════════════════════════════════════════════════════════
 
 // ═══════════════ التبديل بين التبويبات ═══════════════
@@ -19,6 +19,116 @@ async function switchAdminTab(tab, el) {
   else if (tab === 'adminHomeworks') await renderAdminHomeworks(content);
   else if (tab === 'adminAnnouncements') await renderAdminAnnouncements(content);
   else if (tab === 'adminStudents') await renderAdminStudents(content);
+}
+
+// ═══════════════════════════════════════════════════════════
+// 👥 الطلاب — النسخة المضمونة (تشخيص كامل)
+// ═══════════════════════════════════════════════════════════
+async function renderAdminStudents(content) {
+  // 1) اجلب الاشتراكات
+  const { data: enr, error: enrErr } = await supabaseClient
+    .from('enrollments').select('*').order('created_at', { ascending: false });
+
+  // 2) لو فيه خطأ
+  if (enrErr) {
+    content.innerHTML = `
+      <div class="empty-state" style="color:#e74c3c">
+        <div class="icon">⚠️</div>
+        <strong>خطأ في قراءة الاشتراكات</strong>
+        <p style="margin-top:10px;color:#999;font-size:14px">${enrErr.message}</p>
+        <p style="margin-top:5px;color:#999;font-size:12px">Code: ${enrErr.code || 'N/A'}</p>
+      </div>`;
+    return;
+  }
+
+  // 3) لو مفيش اشتراكات
+  if (!enr || enr.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">👥</div>
+        <strong>لا توجد اشتراكات</strong>
+        <p style="margin-top:10px;color:#999;font-size:14px">لم يسجل أي طالب في أي كورس بعد</p>
+      </div>`;
+    return;
+  }
+
+  // 4) اجلب الطلاب
+  const studentIds = enr.map(e => e.student_id).filter(Boolean);
+  const { data: students, error: stuErr } = await supabaseClient
+    .from('students').select('*').in('id', studentIds);
+
+  // 5) اجلب الكورسات
+  const courseIds = enr.map(e => e.course_id).filter(Boolean);
+  const { data: courses } = await supabaseClient
+    .from('courses').select('id,title').in('id', courseIds);
+
+  // 6) اعمل maps
+  const studentsMap = {};
+  (students || []).forEach(s => { studentsMap[s.id] = s; });
+
+  const coursesMap = {};
+  (courses || []).forEach(c => { coursesMap[c.id] = c; });
+
+  // 7) اعرض الجدول
+  content.innerHTML = `
+    <div style="margin-bottom:15px;color:#999;font-size:14px">
+      📊 إجمالي الاشتراكات: <strong style="color:var(--gold)">${enr.length}</strong>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;background:var(--dark-2);border-radius:12px;overflow:hidden;min-width:700px">
+        <thead style="background:rgba(212,175,55,0.15);color:var(--gold)">
+          <tr>
+            <th style="padding:12px;text-align:right">#</th>
+            <th style="padding:12px;text-align:right">الطالب</th>
+            <th style="padding:12px;text-align:right">الهاتف</th>
+            <th style="padding:12px;text-align:right">ولي الأمر</th>
+            <th style="padding:12px;text-align:right">الصف</th>
+            <th style="padding:12px;text-align:right">الكورس</th>
+            <th style="padding:12px;text-align:right">الحالة</th>
+            <th style="padding:12px;text-align:right">إجراء</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${enr.map((e, i) => {
+            const s = studentsMap[e.student_id] || {};
+            const c = coursesMap[e.course_id] || {};
+            return `
+              <tr style="border-bottom:1px solid rgba(212,175,55,0.1)">
+                <td style="padding:12px">${i + 1}</td>
+                <td style="padding:12px">${escapeHtml(s.full_name || 'طالب غير معروف')}</td>
+                <td style="padding:12px">${escapeHtml(s.phone || '-')}</td>
+                <td style="padding:12px">${escapeHtml(s.parent_phone || '-')}</td>
+                <td style="padding:12px">${escapeHtml(s.grade || '-')}</td>
+                <td style="padding:12px">${escapeHtml(c.title || 'كورس محذوف')}</td>
+                <td style="padding:12px">${
+                  e.status === 'approved' ? '✅ مفعّل' :
+                  e.status === 'rejected' ? '❌ مرفوض' : '⏳ انتظار'
+                }</td>
+                <td style="padding:12px;display:flex;gap:6px;flex-wrap:wrap">
+                  ${e.status !== 'approved' ? `<button class="btn" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'approved')">✅ قبول</button>` : ''}
+                  ${e.status !== 'rejected' ? `<button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'rejected')">❌ رفض</button>` : ''}
+                  <button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="deleteEnrollment(${e.id})">🗑️</button>
+                </td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function updateEnrollment(id, status) {
+  const { error } = await supabaseClient.from('enrollments').update({ status }).eq('id', id);
+  if (error) { showToast(error.message, true); return; }
+  showToast('تم التحديث');
+  switchAdminTab('adminStudents');
+}
+
+async function deleteEnrollment(id) {
+  if (!confirm('حذف الاشتراك؟')) return;
+  const { error } = await supabaseClient.from('enrollments').delete().eq('id', id);
+  if (error) { showToast(error.message, true); return; }
+  showToast('تم الحذف');
+  switchAdminTab('adminStudents');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -135,7 +245,6 @@ async function renderAdminLessons(content) {
     return;
   }
 
-  // جلب الكورسات لمطابقة الأسماء
   const coursesMap = {};
   courses.forEach(c => coursesMap[c.id] = c);
 
@@ -547,109 +656,6 @@ async function deleteAnnouncement(id) {
   showToast('تم الحذف');
   if (typeof loadAnnouncements === 'function') await loadAnnouncements();
   switchAdminTab('adminAnnouncements');
-}
-
-// ═══════════════════════════════════════════════════════════
-// 👥 الطلاب — النسخة المحدثة (بدون الاعتماد على العلاقات)
-// ═══════════════════════════════════════════════════════════
-async function renderAdminStudents(content) {
-  // ═══ 1) جلب الاشتراكات ═══
-  const { data: enr, error: enrError } = await supabaseClient
-    .from('enrollments')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (enrError) {
-    content.innerHTML = `<div class="empty-state">
-      <div class="icon">⚠️</div>
-      خطأ: ${enrError.message}
-    </div>`;
-    return;
-  }
-
-  if (!enr?.length) {
-    content.innerHTML = '<div class="empty-state"><div class="icon">👥</div>لا توجد اشتراكات</div>';
-    return;
-  }
-
-  // ═══ 2) جلب الطلاب ═══
-  const studentIds = [...new Set(enr.map(e => e.student_id))];
-  const { data: students } = await supabaseClient
-    .from('students')
-    .select('*')
-    .in('id', studentIds);
-
-  // ═══ 3) جلب الكورسات ═══
-  const courseIds = [...new Set(enr.map(e => e.course_id))];
-  const { data: courses } = await supabaseClient
-    .from('courses')
-    .select('id,title')
-    .in('id', courseIds);
-
-  // ═══ 4) إنشاء Maps ═══
-  const studentsMap = {};
-  (students || []).forEach(s => studentsMap[s.id] = s);
-
-  const coursesMap = {};
-  (courses || []).forEach(c => coursesMap[c.id] = c);
-
-  // ═══ 5) عرض الجدول ═══
-  content.innerHTML = `
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;background:var(--dark-2);border-radius:12px;overflow:hidden">
-        <thead style="background:rgba(212,175,55,0.15);color:var(--gold)">
-          <tr>
-            <th style="padding:12px;text-align:right">الطالب</th>
-            <th style="padding:12px;text-align:right">النوع</th>
-            <th style="padding:12px;text-align:right">الهاتف</th>
-            <th style="padding:12px;text-align:right">ولي الأمر</th>
-            <th style="padding:12px;text-align:right">الصف</th>
-            <th style="padding:12px;text-align:right">الكورس</th>
-            <th style="padding:12px;text-align:right">الحالة</th>
-            <th style="padding:12px;text-align:right">إجراء</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${enr.map(e => {
-            const s = studentsMap[e.student_id] || {};
-            const c = coursesMap[e.course_id] || {};
-            return `
-              <tr style="border-bottom:1px solid rgba(212,175,55,0.1)">
-                <td style="padding:12px">${escapeHtml(s.full_name || '-')}</td>
-                <td style="padding:12px">${s.gender === 'male' ? '👦' : s.gender === 'female' ? '👧' : '-'}</td>
-                <td style="padding:12px">${escapeHtml(s.phone || '-')}</td>
-                <td style="padding:12px">${escapeHtml(s.parent_phone || '-')}</td>
-                <td style="padding:12px">${escapeHtml(s.grade || '-')}</td>
-                <td style="padding:12px">${escapeHtml(c.title || '-')}</td>
-                <td style="padding:12px">${
-                  e.status === 'approved' ? '✅ مفعّل' :
-                  e.status === 'rejected' ? '❌ مرفوض' : '⏳ انتظار'
-                }</td>
-                <td style="padding:12px;display:flex;gap:6px;flex-wrap:wrap">
-                  ${e.status !== 'approved' ? `<button class="btn" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'approved')">✅</button>` : ''}
-                  ${e.status !== 'rejected' ? `<button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="updateEnrollment(${e.id},'rejected')">❌</button>` : ''}
-                  <button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="deleteEnrollment(${e.id})">🗑️</button>
-                </td>
-              </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-async function updateEnrollment(id, status) {
-  const { error } = await supabaseClient.from('enrollments').update({ status }).eq('id', id);
-  if (error) { showToast(error.message, true); return; }
-  showToast('تم التحديث');
-  switchAdminTab('adminStudents');
-}
-
-async function deleteEnrollment(id) {
-  if (!confirm('حذف الاشتراك؟')) return;
-  const { error } = await supabaseClient.from('enrollments').delete().eq('id', id);
-  if (error) { showToast(error.message, true); return; }
-  showToast('تم الحذف');
-  switchAdminTab('adminStudents');
 }
 
 // ═══════════════════════════════════════════════════════════
