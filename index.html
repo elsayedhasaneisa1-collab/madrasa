@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#d4af37">
-<meta name="description" content="منصة الأستاذ محمد عيسى التعليمية - شرح مبسط، متابعة مستمرة، ومراجعات نهائية">
+<meta name="description" content="منصة الأستاذ محمد عيسى التعليمية">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="منصة محمد عيسى">
@@ -30,16 +30,50 @@
       <span class="logo-tag">منصة تعليمية</span>
     </div>
   </div>
-  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()" aria-label="القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
   <div class="nav-links" id="navLinks">
-    <a onclick="scrollToSection('home')">الرئيسية</a>
-    <a onclick="scrollToSection('about')">عن الأستاذ</a>
-    <a onclick="scrollToSection('access')">الوصول</a>
-    <a onclick="scrollToSection('courses')">الكورسات</a>
-    <a onclick="scrollToSection('features')">المميزات</a>
-    <button class="btn" id="adminBtn" style="display:none" onclick="location.href='admin.html'">👑 لوحة الأستاذ</button>
-    <button class="btn btn-outline" onclick="location.href='login.html'">دخول</button>
-    <button class="btn" onclick="location.href='register.html'">حساب جديد</button>
+    <div class="menu-header">
+      <div class="logo-icon small">م.ع</div>
+      <div>
+        <strong>الأستاذ محمد عيسى</strong>
+        <span>منصة تعليمية</span>
+      </div>
+      <button class="menu-close" onclick="toggleMenu()" aria-label="إغلاق">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <a onclick="scrollToSection('home')">
+      <i class="fas fa-home"></i>
+      <span>الرئيسية</span>
+    </a>
+    <a onclick="scrollToSection('about')">
+      <i class="fas fa-user-tie"></i>
+      <span>عن الأستاذ</span>
+    </a>
+    <a onclick="scrollToSection('access')">
+      <i class="fas fa-key"></i>
+      <span>الوصول</span>
+    </a>
+    <a onclick="scrollToSection('courses')">
+      <i class="fas fa-book"></i>
+      <span>الكورسات</span>
+    </a>
+    <a onclick="scrollToSection('features')">
+      <i class="fas fa-star"></i>
+      <span>المميزات</span>
+    </a>
+    <div class="menu-divider"></div>
+    <button class="btn menu-btn" id="adminBtn" style="display:none" onclick="location.href='admin.html'">
+      <i class="fas fa-crown"></i> لوحة الأستاذ
+    </button>
+    <button class="btn btn-outline menu-btn" id="loginBtn" onclick="location.href='login.html'">
+      <i class="fas fa-sign-in-alt"></i> دخول
+    </button>
+    <button class="btn menu-btn" id="registerBtn" onclick="location.href='register.html'">
+      <i class="fas fa-user-plus"></i> حساب جديد
+    </button>
   </div>
 </nav>
 
@@ -120,49 +154,32 @@
   
   <div class="access-grid">
     <div class="access-card reveal delay-1">
-      <div class="access-icon">
-        <i class="fas fa-infinity"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-infinity"></i></div>
       <h4>وصول دائم</h4>
       <p>دخول غير محدود لكل الكورسات والدروس لمدة كاملة</p>
     </div>
-    
     <div class="access-card reveal delay-2">
-      <div class="access-icon">
-        <i class="fas fa-clock"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-clock"></i></div>
       <h4>24/7 متاح</h4>
       <p>شاهد المحتوى في أي وقت ومن أي مكان بدون قيود</p>
     </div>
-    
     <div class="access-card reveal delay-3">
-      <div class="access-icon">
-        <i class="fas fa-mobile-alt"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-mobile-alt"></i></div>
       <h4>جميع الأجهزة</h4>
       <p>شغّل المنصة على الجوال والتابلت واللابتوب</p>
     </div>
-    
     <div class="access-card reveal delay-4">
-      <div class="access-icon">
-        <i class="fas fa-sync-alt"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-sync-alt"></i></div>
       <h4>تحديثات مجانية</h4>
       <p>كل الإضافات والتحسينات الجديدة تصلك تلقائياً</p>
     </div>
-    
     <div class="access-card reveal delay-5">
-      <div class="access-icon">
-        <i class="fas fa-headset"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-headset"></i></div>
       <h4>دعم فني دائم</h4>
       <p>تواصل مباشر مع الأستاذ للإجابة على استفساراتك</p>
     </div>
-    
     <div class="access-card reveal delay-6">
-      <div class="access-icon">
-        <i class="fas fa-book"></i>
-      </div>
+      <div class="access-icon"><i class="fas fa-book"></i></div>
       <h4>ملازم شاملة</h4>
       <p>ملازم PDF جاهزة للطباعة مع حلول نموذجية</p>
     </div>
@@ -244,6 +261,8 @@
   <div class="tabs">
     <button class="tab active" onclick="switchAdminTab('adminCourses', this)">📚 الكورسات</button>
     <button class="tab" onclick="switchAdminTab('adminLessons', this)">🎬 الدروس</button>
+    <button class="tab" onclick="switchAdminTab('adminExams', this)">📝 الامتحانات</button>
+    <button class="tab" onclick="switchAdminTab('adminHomeworks', this)">📓 الواجبات</button>
     <button class="tab" onclick="switchAdminTab('adminAnnouncements', this)">📢 الإعلانات</button>
     <button class="tab" onclick="switchAdminTab('adminStudents', this)">👥 الطلاب</button>
   </div>
@@ -287,6 +306,28 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="chatModal">
+  <div class="modal chat-modal-full" style="max-width:520px;padding:0;overflow:hidden">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div>
+          <strong>شات المنصة</strong>
+          <span>تواصل مباشر مع الأستاذ</span>
+        </div>
+      </div>
+      <button class="chat-close" onclick="closeChat()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-loading">جاري التحميل...</div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <a href="https://t.me/sayoda_elgadar" target="_blank" class="telegram-float" title="تواصل على تيليجرام">
@@ -294,6 +335,33 @@
     <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
   </svg>
 </a>
+
+<div class="bottom-bar" id="bottomBar">
+  <button class="bottom-item" onclick="scrollToSection('courses')" data-label="جميع الكورسات">
+    <i class="fas fa-book"></i>
+    <span>جميع الكورسات</span>
+  </button>
+  
+  <button class="bottom-item" onclick="openMyCourses()" data-label="كورساتي">
+    <i class="fas fa-graduation-cap"></i>
+    <span>كورساتي</span>
+  </button>
+  
+  <button class="bottom-item chat-big" onclick="openChat()" data-label="شات المنصة">
+    <i class="fas fa-comments"></i>
+    <span>شات المنصة</span>
+  </button>
+  
+  <button class="bottom-item" onclick="scrollToSection('about')" data-label="عن المدرس">
+    <i class="fas fa-user-tie"></i>
+    <span>عن المدرس</span>
+  </button>
+  
+  <a href="https://t.me/sayoda_elgadar" target="_blank" class="bottom-item" data-label="الدعم الفني">
+    <i class="fas fa-headset"></i>
+    <span>الدعم الفني</span>
+  </a>
+</div>
 
 <footer>
   <div class="footer-content">
@@ -352,6 +420,7 @@
 <script src="js/auth.js"></script>
 <script src="js/courses.js"></script>
 <script src="js/player.js"></script>
+<script src="js/chat.js"></script>
 <script src="js/app.js"></script>
 
 <script>
@@ -373,14 +442,48 @@ document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')
 });
 
 function toggleMenu() {
-  document.getElementById('navLinks').classList.toggle('open');
+  const navLinks = document.getElementById('navLinks');
+  const menuToggle = document.getElementById('menuToggle');
+  navLinks.classList.toggle('open');
+  
+  const icon = menuToggle.querySelector('i');
+  if (navLinks.classList.contains('open')) {
+    icon.className = 'fas fa-times';
+    document.body.style.overflow = 'hidden';
+  } else {
+    icon.className = 'fas fa-bars';
+    document.body.style.overflow = '';
+  }
 }
 
 document.querySelectorAll('.nav-links a').forEach(link => {
   link.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('open');
+    const navLinks = document.getElementById('navLinks');
+    if (navLinks.classList.contains('open')) {
+      toggleMenu();
+    }
   });
 });
+
+function openMyCourses() {
+  if (!currentUser) {
+    showToast('سجّل الدخول أولاً لعرض كورساتك', true);
+    setTimeout(() => location.href = 'login.html', 800);
+    return;
+  }
+  
+  ['home', 'about', 'access', 'features', 'courses', 'announcements'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  
+  const dashboard = document.getElementById('dashboard');
+  if (dashboard) {
+    dashboard.classList.add('active');
+    switchTab('myCourses');
+    scrollToSection('dashboard');
+  }
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

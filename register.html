@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#d4af37">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="https://fav.farm/🎓">
+<link rel="icon" href="assets/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="css/style.css">
 <title>إنشاء حساب جديد | منصة الأستاذ محمد عيسى</title>
@@ -25,7 +25,6 @@
     <p class="form-subtitle">جميع البيانات مطلوبة</p>
 
     <form id="registerForm" onsubmit="handleRegister(event)">
-      
       <div class="form-group">
         <label><i class="fas fa-user" style="color:var(--gold);"></i> الاسم بالكامل <span class="required">*</span></label>
         <input type="text" id="fullName" required minlength="3" placeholder="اكتب اسمك الثلاثي" autocomplete="name">
@@ -52,7 +51,7 @@
 
       <div class="form-group">
         <label><i class="fas fa-phone" style="color:var(--gold);"></i> رقم الهاتف <span class="required">*</span></label>
-        <input type="tel" id="phone" required placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric" autocomplete="tel">
+        <input type="tel" id="phone" required placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric">
         <small class="form-hint">11 رقم يبدأ بـ 01</small>
       </div>
 

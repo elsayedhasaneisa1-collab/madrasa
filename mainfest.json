@@ -1,7 +1,7 @@
 {
   "name": "منصة الأستاذ محمد عيسى التعليمية",
-  "short_name": "الاستاذ محمد عيسى",
-  "description": "منصة تعليمية متكاملة للمرحلة الثانوية - شرح مبسط ومتابعة مستمرة",
+  "short_name": " الاستاذ محمد عيسى ",
+  "description": "منصة تعليمية متكاملة للمرحلة الثانوية",
   "start_url": "/madrasa/",
   "scope": "/madrasa/",
   "id": "/madrasa/",
@@ -11,7 +11,7 @@
   "theme_color": "#d4af37",
   "lang": "ar",
   "dir": "rtl",
-  "categories": ["education", "learning"],
+  "categories": ["education"],
   "icons": [
     {
       "src": "assets/icon-192.png",
@@ -36,14 +36,12 @@
     {
       "name": "الكورسات",
       "short_name": "كورسات",
-      "url": "/madrasa/#courses",
-      "description": "تصفح كل الكورسات المتاحة"
+      "url": "/madrasa/#courses"
     },
     {
       "name": "لوحة الأستاذ",
       "short_name": "لوحة",
-      "url": "/madrasa/admin.html",
-      "description": "لوحة تحكم الأستاذ محمد عيسى"
+      "url": "/madrasa/admin.html"
     }
   ]
 }
